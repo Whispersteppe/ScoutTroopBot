@@ -1,0 +1,190 @@
+﻿{
+  "Discord": {
+    "Token": "Your Discord topic ID goes here"
+  },
+  "PatrolTemplate": {
+    "ItemType": "Patrol",
+    "Roles": [
+      {
+        "Name": "{name} Patrol",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      }
+    ],
+    "Categories": [
+      {
+        "Name": "{nameLower}-patrol",
+        "Channels": [
+          {
+            "Name": "{nameLower}-general",
+            "Type": "textGuildChannel",
+            "Topic": "General discussion for the {name} patrol."
+          },
+          {
+            "Name": "{nameLower}-events",
+            "Type": "textGuildChannel",
+            "Topic": "General discussion for the {name} patrol."
+          }
+        ],
+        "PermissionOverwrites": [
+          {
+            "RoleName": "{name} Patrol",
+            "Allowed": [
+              "viewChannel",
+              "sendMessages",
+              "readMessageHistory"
+            ]
+          },
+          {
+            "RoleName": "Everyone",
+            "Denied": [
+              "viewChannel"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "UnitTemplate": {
+    "ItemType": "Unit",
+    "Roles": [
+      {
+        "Name": "{name} Unit",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      },
+      {
+        "Name": "{name} SM",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      },
+      {
+        "Name": "{name} Parent",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      }
+    ],
+    "Categories": [
+      {
+        "Name": "{nameLower}-unit",
+        "Channels": [
+          {
+            "Name": "{nameLower}-general",
+            "Type": "textGuildChannel",
+            "Topic": "General discussion for the {name} unit."
+          },
+          {
+            "Name": "{nameLower}-planning",
+            "Type": "textGuildChannel",
+            "Topic": "General discussion for the {name} unit."
+          },
+          {
+            "Name": "{nameLower}-fun-stuff",
+            "Type": "textGuildChannel",
+            "Topic": "General discussion for the {name} unit."
+          },
+          {
+            "Name": "{nameLower}-events",
+            "Type": "textGuildChannel",
+            "Topic": "General discussion for the {name} unit."
+          }
+        ],
+        "PermissionOverwrites": [
+          {
+            "RoleName": "{name} Unit",
+            "Allowed": [
+              "viewChannel",
+              "sendMessages",
+              "readMessageHistory"
+            ]
+          },
+          {
+            "RoleName": "Everyone",
+            "Denied": [
+              "viewChannel"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "MeritBadgeTemplate": {
+    "ItemType": "Merit Badge",
+    "Roles": [
+      {
+        "Name": "{name} Merit Badge",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      }
+    ],
+    "Categories": [
+      {
+        "Name": "Merit Badges",
+        "Channels": [
+          {
+            "Name": "{nameLower}-general",
+            "Type": "textGuildChannel",
+            "Topic": "General discussion for the {name} merit badge.",
+            "PermissionOverwrites": [
+              {
+                "RoleName": "{name} Merit Badge",
+                "Allowed": [
+                  "viewChannel",
+                  "sendMessages",
+                  "readMessageHistory"
+                ]
+              }
+            ]
+          },
+          {
+            "Name": "{nameLower}-Forum",
+            "Type": "forumGuildChannel",
+            "Topic": "General discussion for the {name} merit badge.",
+            "PermissionOverwrites": [
+              {
+                "RoleName": "{name} Merit Badge",
+                "Allowed": [
+                  "viewChannel",
+                  "sendMessages",
+                  "readMessageHistory"
+                ]
+              }
+            ]
+          }
+        ],
+        "PermissionOverwrites": [
+          {
+            "RoleName": "Everyone",
+            "Denied": [
+              "viewChannel"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "CommonTemplate": {
+    "ItemType": "Common",
+    "ChannelTemplate": {
+      "Name": "General Category",
+      "Channels": [
+        {
+          "Name": "welcome",
+          "Type": "Text"
+        }
+      ],
+      "PermissionOverwrites": []
+    },
+    "RoleTemplates": [
+      {
+        "Name": "Scoutmaster",
+        "Color": "#9b59b6",
+        "Hoist": true,
+        "Icon": null,
+        "UnicodeIcon": "🧭",
+        "Mentionable": true,
+        "Permissions": [ "Administrator" ]
+      }
+    ]
+  }
+}
