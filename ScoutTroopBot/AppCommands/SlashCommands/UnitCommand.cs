@@ -3,14 +3,17 @@ using Microsoft.Extensions.Options;
 using NetCord;
 using NetCord.Rest;
 using NetCord.Services.ApplicationCommands;
-using NetCord.Services.ComponentInteractions;
 using ScoutTroopBot.Configuration;
-using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
-using System.Threading.Channels;
 
 namespace ScoutTroopBot.AppCommands.SlashCommands;
 
+/// <summary>
+/// Commands for managing units
+/// </summary>
+/// <param name="logger"></param>
+/// <param name="restClient"></param>
+/// <param name="rootConfig"></param>
+/// <param name="roleChannelBuilder"></param>
 [SlashCommand("unit", "Manages unit setup", DefaultGuildPermissions = Permissions.Administrator)]
 public class UnitSetupCommands(
     ILogger<SetupCommand> logger, 
@@ -18,6 +21,11 @@ public class UnitSetupCommands(
     IOptions<RootConfiguration> rootConfig,
     RoleChannelBuilder roleChannelBuilder) : ApplicationCommandModule<ApplicationCommandContext>
 {
+    /// <summary>
+    /// create the roles and channels for a new unit
+    /// </summary>
+    /// <param name="unitName"></param>
+    /// <returns></returns>
     [SubSlashCommand("create", "set up the unit")]
     public async Task<string> SetupUnitAsync([SlashCommandParameter(Description = "The name of the new unit")] string unitName)
     {
@@ -32,6 +40,10 @@ public class UnitSetupCommands(
         return "Continuing Setup in background";
     }
 
+    /// <summary>
+    /// list all units by looking for roles that end with " Unit"
+    /// </summary>
+    /// <returns></returns>
     [SubSlashCommand("list", "list existing units")]
     public async Task<string> ListUnitsAsync()
     {

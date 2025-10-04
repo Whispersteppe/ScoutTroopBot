@@ -3,14 +3,17 @@ using Microsoft.Extensions.Options;
 using NetCord;
 using NetCord.Rest;
 using NetCord.Services.ApplicationCommands;
-using NetCord.Services.ComponentInteractions;
 using ScoutTroopBot.Configuration;
-using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
-using System.Threading.Channels;
 
 namespace ScoutTroopBot.AppCommands.SlashCommands;
 
+/// <summary>
+/// Create, remove, and rename patrols
+/// </summary>
+/// <param name="logger"></param>
+/// <param name="restClient"></param>
+/// <param name="rootConfig"></param>
+/// <param name="roleChannelBuilder"></param>
 [SlashCommand("patrol", "Manages patrol setup", DefaultGuildPermissions = Permissions.Administrator)]
 public class PatrolSetupCommands(
     ILogger<SetupCommand> logger, 
@@ -18,6 +21,11 @@ public class PatrolSetupCommands(
     IOptions<RootConfiguration> rootConfig, 
     RoleChannelBuilder roleChannelBuilder) : ApplicationCommandModule<ApplicationCommandContext>
 {
+    /// <summary>
+    /// create a patrol with roles and channels from the patrol template
+    /// </summary>
+    /// <param name="patrolName"></param>
+    /// <returns></returns>
     [SubSlashCommand("create", "set up the patrol")]
     public async Task<string> SetupPatrolAsync([SlashCommandParameter(Description = "The name of the new patrol")] string patrolName)
     {
@@ -33,6 +41,10 @@ public class PatrolSetupCommands(
 
     }
 
+    /// <summary>
+    /// list the set of existing patrols
+    /// </summary>
+    /// <returns></returns>
     [SubSlashCommand("list", "list existing patrols")]
     public async Task<string> ListPatrolsAsync()
     {
@@ -42,9 +54,19 @@ public class PatrolSetupCommands(
         return "Existing patrols:\n" + string.Join("\n", patrolRoles);
     }
 
+    /// <summary>
+    /// delete a patrol by removing roles and channels from the patrol template
+    /// </summary>
+    /// <param name="patrolName"></param>
+    /// <returns></returns>
+    /// <remarks>
+    /// currently we're not deleting patrols to avoid accidental data loss
+    /// </remarks>
     [SubSlashCommand("delete", "delete a patrol")]
     public async Task<string> DeletePatrolAsync([SlashCommandParameter(Description = "The name of the patrol to delete")] string patrolName)
     {
+        return "We're currently not deleting patrols. Please contact an administrator.";
+
         Dictionary<string, string> substitutions = new Dictionary<string, string>()
         {
             { "name", patrolName },
@@ -55,6 +77,12 @@ public class PatrolSetupCommands(
         return "Continuing Removal in background";
     }
 
+    /// <summary>
+    /// rename a patrol by renaming roles and channels from the patrol template
+    /// </summary>
+    /// <param name="patrolName"></param>
+    /// <param name="newPatrolName"></param>
+    /// <returns></returns>
     [SubSlashCommand("rename", "rename a patrol")]
     public async Task<string> RenamePatrolAsync(
         [SlashCommandParameter(Description = "The name of the patrol to rename")] string patrolName,

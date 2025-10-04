@@ -7,6 +7,12 @@ using System.Threading.Tasks;
 
 namespace ScoutTroopBot.AppCommands.SlashCommands;
 
+/// <summary>
+/// various request commands (BOR, Merit Badge, Scoutmaster Conference)
+/// </summary>
+/// <remarks>
+/// these are currently placeholders and need to be implemented.  they may become dialogs and buttons someplace.
+/// </remarks>
 [SlashCommand("request", "Handles various requests")]
 public class RequestCommand : ApplicationCommandModule<ApplicationCommandContext>
 {

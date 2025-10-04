@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using NetCord;
 using NetCord.Gateway;
 using NetCord.Hosting.Gateway;
@@ -18,8 +17,16 @@ using System.Text.Json.Serialization;
 
 namespace ScoutTroopBot;
 
+/// <summary>
+/// entry point into the bot
+/// </summary>
 internal class Program
 {
+    /// <summary>
+    /// entry point into the bot
+    /// </summary>
+    /// <param name="args"></param>
+    /// <returns></returns>
     static async Task Main(string[] args)
     {
         //  bot dev is at https://discord.com/developers/applications/1422324397032738959/information
@@ -68,46 +75,37 @@ internal class Program
         var host = builder.Build();
         host.AddModules(typeof(Program).Assembly);
 
-        //var configuration = new ConfigurationBuilder()
-        //    .AddCommandLine(args)
-        //    .AddJsonFile("appsettings.json")
-        //    .Build();
+        var configuration = new ConfigurationBuilder()
+            .AddCommandLine(args)
+            .AddJsonFile("appsettings.json")
+            .Build();
 
-        //var root = configuration.Get<RootConfiguration>();
+        var root = configuration.Get<RootConfiguration>();
 
-        //JsonSerializerOptions settings = new JsonSerializerOptions
-        //{
-        //    WriteIndented = true,
-        //    Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
-        //};
+        //DumpConfiguration(root);
 
-        //Debug.WriteLine(JsonSerializer.Serialize(root.PatrolTemplate, settings));
-
-        //root.PatrolTemplate.Categories[0].Channels.Add(new ChannelTemplateConfiguration
-        //{
-        //    Name = "{PatrolName} - Test",
-        //    Type = ChannelType.TextGuildChannel,
-        //    PermissionOverwrites = new List<PermissionOverwriteTemplateConfiguration>
-        //    {
-        //        new PermissionOverwriteTemplateConfiguration
-        //        {
-        //            RoleName = "{PatrolName} Patrol",
-        //            Type = PermissionOverwriteType.Role,
-        //            Allowed = new List<Permissions>() { Permissions.ViewChannel , Permissions.SendMessages , Permissions.ReadMessageHistory },
-        //            Denied =   new List<Permissions>(){ Permissions.ViewChannel , Permissions.SendMessages , Permissions.ReadMessageHistory }
-        //        },
-        //        new PermissionOverwriteTemplateConfiguration
-        //        {
-        //            RoleName = "{PatrolName} Patrol",
-        //            Type = PermissionOverwriteType.Role,
-        //            Allowed =  new List<Permissions>(){ Permissions.ViewChannel , Permissions.SendMessages , Permissions.ReadMessageHistory },
-        //            Denied =  new List<Permissions>() { Permissions.ViewChannel , Permissions.SendMessages , Permissions.ReadMessageHistory }
-        //        }
-        //    }
-        //});
-        //Debug.WriteLine(JsonSerializer.Serialize(root.PatrolTemplate, settings));
 
         await host.RunAsync();
+    }
+
+    /// <summary>
+    /// a method I have just to dump the configuration so I can figure out errors in it. Not used in production.
+    /// </summary>
+    /// <param name="root"></param>
+    /// <remarks>
+    /// the permission flags were giving me issues.  if they aren't right, then the 
+    /// entire structure they are on just 'disappears' when deserialized.
+    /// </remarks>
+    private static void DumpConfiguration(RootConfiguration root)
+    {
+
+        JsonSerializerOptions settings = new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+        };
+
+        Debug.WriteLine(JsonSerializer.Serialize(root.PatrolTemplate, settings));
     }
 
 

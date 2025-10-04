@@ -3,14 +3,26 @@ using Microsoft.Extensions.Options;
 using NetCord;
 using NetCord.Rest;
 using NetCord.Services.ApplicationCommands;
-using NetCord.Services.ComponentInteractions;
 using ScoutTroopBot.Configuration;
-using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
-using System.Threading.Channels;
 
 namespace ScoutTroopBot.AppCommands.SlashCommands;
+/* TODO merit badge stuff
+ *     void AddBadgeForUser();
+    void CompleteBadgeForUser();
+    void GetBadgeList();
+    void GetBadgesForUser();
+    void GetBadgeRoster();
+ */
 
+/// <summary>
+/// Provides commands for managing merit badge setup within a Discord server.
+/// </summary>
+/// <remarks>This class defines slash commands for creating and listing merit badge-related roles and channels. It
+/// is intended for use by administrators and requires appropriate permissions to execute.</remarks>
+/// <param name="logger"></param>
+/// <param name="restClient"></param>
+/// <param name="rootConfig"></param>
+/// <param name="roleChannelBuilder"></param>
 [SlashCommand("mb", "Manages merit badge setup", DefaultGuildPermissions = Permissions.Administrator)]
 public class MeritBadgeSetupCommands(
     ILogger<SetupCommand> logger, 
@@ -18,6 +30,14 @@ public class MeritBadgeSetupCommands(
     IOptions<RootConfiguration> rootConfig,
     RoleChannelBuilder roleChannelBuilder) : ApplicationCommandModule<ApplicationCommandContext>
 {
+    /// <summary>
+    /// Sets up a merit badge by creating the necessary roles and channels based on a predefined template.
+    /// </summary>
+    /// <remarks>This method uses a predefined template to create roles and channels associated with the
+    /// specified merit badge. The <paramref name="badgeName"/> is used to customize the template, including generating
+    /// a lowercase, hyphenated version of the name for certain identifiers.</remarks>
+    /// <param name="badgeName">The name of the merit badge. This value is used to generate role and channel names.</param>
+    /// <returns>A string indicating that the setup process is continuing in the background.</returns>
     [SubSlashCommand("create", "set up the merit badge")]
     public async Task<string> SetupMeritBadgeAsync([SlashCommandParameter(Description = "The name of the merit badge")] string badgeName)
     {
@@ -32,7 +52,15 @@ public class MeritBadgeSetupCommands(
         return "Continuing Setup in background";
     }
 
-    [SubSlashCommand("list", "list existing units")]
+    /// <summary>
+    /// Lists the existing merit badge units in the current guild.
+    /// </summary>
+    /// <remarks>This method retrieves all roles in the current guild whose names end with " Merit Badge" and
+    /// returns a formatted string containing their names. If no such roles are found, the method returns a message
+    /// indicating that no units exist.</remarks>
+    /// <returns>A string containing the names of all existing merit badge units, each on a new line, or a message indicating
+    /// that no units were found.</returns>
+    [SubSlashCommand("list", "list existing merit badges")]
     public async Task<string> ListUnitsAsync()
     {
         var unitRoles = Context.Guild.Roles.Values.Where(r => r.Name.EndsWith(" Merit Badge")).Select(r => r.Name).ToList();

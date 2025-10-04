@@ -9,6 +9,13 @@ using System.Text.Json.Serialization;
 
 namespace ScoutTroopBot.AppCommands;
 
+/*
+ this will probably be reswizzled as I figure out modal dialogs and a better generial approach
+  - button to start registration
+  - modal dialog to collect info
+  - log info to file or database
+  - maybe assign roles based on info (like "Eagle Scout" role)
+ */
 public class RegisterScoutCommand(ILogger<RegisterScoutCommand> logger, RestClient restClient) : ApplicationCommandModule<ApplicationCommandContext>
 {
 

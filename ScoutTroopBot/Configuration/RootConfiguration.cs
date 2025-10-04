@@ -3,12 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace ScoutTroopBot.Configuration;
 
-/*
- *    
- *    list of positions
- *    list of ranks
- *    list of merit badges
- */
+/// <summary>
+/// the root configuration for the bot, including Discord settings and templates for patrols, units, merit badges, and common settings.
+/// </summary>
 public class RootConfiguration
 {
     public NetcordConfiguration Discord { get; set; }
@@ -17,6 +14,36 @@ public class RootConfiguration
     public TemplateConfiguration MeritBadgeTemplate { get; set; }
     public TemplateConfiguration CommonTemplate { get; set; }
 
+    public List<PositionItem> Positions { get; set; }
+    public List<RankItem> Ranks { get; set; }
+    public List<MeritBadgeItem> MeritBadges { get; set; }
+
+
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement> ExtraProperties { get; set; }
+
+
+}
+
+public class PositionItem
+{   public string Name { get; set; }
+    public string Description { get; set; }
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement> ExtraProperties { get; set; }
+}
+
+public class RankItem
+{
+    public string Name { get; set; }
+    public string Description { get; set; }
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement> ExtraProperties { get; set; }
+}
+
+public class MeritBadgeItem
+{
+    public string Name { get; set; }
+    public string Description { get; set; }
     [JsonExtensionData]
     public Dictionary<string, JsonElement> ExtraProperties { get; set; }
 }

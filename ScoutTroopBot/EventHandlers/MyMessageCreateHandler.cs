@@ -11,6 +11,10 @@ using System.Threading.Tasks;
 
 namespace ScoutTroopBot.EventHandlers;
 
+/// <summary>
+/// message handlers for various system messages.  they may or may not go away, but right now they are just logging things
+/// </summary>
+/// <param name="logger"></param>
 public class MyMessageCreateHandler(ILogger<MyMessageCreateHandler> logger) : IMessageCreateGatewayHandler
 {
     public ValueTask HandleAsync(Message message)

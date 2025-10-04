@@ -2,30 +2,38 @@
 using NetCord;
 using NetCord.Rest;
 using NetCord.Services.ApplicationCommands;
-using NetCord.Services.ComponentInteractions;
-using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
-using System.Threading.Channels;
 
 namespace ScoutTroopBot.AppCommands.SlashCommands;
 
+/// <summary>
+/// set up the server with common roles and channels
+/// </summary>
+/// <param name="logger"></param>
+/// <param name="restClient"></param>
 [SlashCommand("setup", "Manages setup", DefaultGuildPermissions = Permissions.Administrator)]
 public class SetupCommand(ILogger<SetupCommand> logger, RestClient restClient) : ApplicationCommandModule<ApplicationCommandContext>
 {
+    /// <summary>
+    /// command to set up common roles and channels
+    /// </summary>
+    /// <returns></returns>
     [SubSlashCommand("common", "set up the server")]
     public async Task<string> SetupServerAsync()
     {
+        //TODO use the RoleChannelBuilder to do this from a template
 
         ServerSetupBackgroundAsync();
 
         return "Continuing Setup in background";
     }
 
-    //todo /Setup Unit - create separate units and crews (think 406b, 406g, crew 406)
-    //  or /unit create 406b
     //  todo need some utility functions to normalize names (lowercase, replace spaces with dashes, etc)
     //  todo need some DI utilities to wortk with the configuration templates
 
+    /// <summary>
+    /// background task to set up the server
+    /// </summary>
+    /// <returns></returns>
     private async Task ServerSetupBackgroundAsync()
     {
         await Context.Channel.SendMessageAsync("Setting up server...");
