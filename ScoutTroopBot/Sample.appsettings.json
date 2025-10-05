@@ -1,6 +1,6 @@
 ﻿{
   "Discord": {
-    "Token": "Your Discord topic ID goes here"
+    "Token": "replace with your own Discord token"
   },
   "PatrolTemplate": {
     "ItemType": "Patrol",
@@ -165,25 +165,144 @@
   },
   "CommonTemplate": {
     "ItemType": "Common",
-    "ChannelTemplate": {
-      "Name": "General Category",
-      "Channels": [
-        {
-          "Name": "welcome",
-          "Type": "Text"
-        }
-      ],
-      "PermissionOverwrites": []
-    },
-    "RoleTemplates": [
+    "Roles": [
       {
         "Name": "Scoutmaster",
-        "Color": "#9b59b6",
-        "Hoist": true,
-        "Icon": null,
-        "UnicodeIcon": "🧭",
-        "Mentionable": true,
-        "Permissions": [ "Administrator" ]
+        "Color": "#e74c3c",
+        "Mentionable": true
+      },
+      {
+        "Name": "Assistant Scoutmaster",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      },
+      {
+        "Name": "Parent",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      },
+      {
+        "Name": "Registered Scout",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      },
+      {
+        "Name": "Registered Adult",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      },
+      {
+        "Name": "PLC",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      },
+      {
+        "Name": "Moderator",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      },
+      {
+        "Name": "Committee Chair",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      },
+      {
+        "Name": "Senior Patrol Leader",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      },
+      {
+        "Name": "Assistant Senior Patrol Leader",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      },
+      {
+        "Name": "Patrol Leader",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      },
+      {
+        "Name": "Assistant Patrol Leader",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      },
+      {
+        "Name": "Quartermaster",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      },
+      {
+        "Name": "Troop Guide",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      },
+      {
+        "Name": "Chaplains Aid",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      },
+      {
+        "Name": "Junior Assistant Scoutmaster",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      }
+
+    ],
+    "Categories": [
+      {
+        "Name": "general",
+        "Channels": [
+          {
+            "Name": "general-text",
+            "Type": "textGuildChannel",
+            "Topic": "General discussion",
+            "PermissionOverwrites": [
+            ]
+          },
+          {
+            "Name": "announcements",
+            "Type": "textGuildChannel",
+            "Topic": "General discussion",
+            "PermissionOverwrites": [
+            ]
+          },
+          {
+            "Name": "events",
+            "Type": "textGuildChannel",
+            "Topic": "General discussion",
+            "PermissionOverwrites": [
+            ]
+          },
+          {
+            "Name": "resources",
+            "Type": "textGuildChannel",
+            "Topic": "General discussion",
+            "PermissionOverwrites": [
+            ]
+          },
+          {
+            "Name": "tows-discussion",
+            "Type": "textGuildChannel",
+            "Topic": "General discussion",
+            "PermissionOverwrites": [
+            ]
+          },
+          {
+            "Name": "fun-stuff",
+            "Type": "textGuildChannel",
+            "Topic": "General discussion",
+            "PermissionOverwrites": [
+            ]
+          }
+        ],
+        "PermissionOverwrites": [
+          {
+            "RoleName": "Everyone",
+            "Denied": [
+              "viewChannel"
+            ]
+          }
+        ]
       }
     ]
   }

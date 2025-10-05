@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ScoutTroopBot.AppCommands.SlashCommands;
+namespace ScoutTroopBot.AppCommands;
 
 /// <summary>
 /// various request commands (BOR, Merit Badge, Scoutmaster Conference)
