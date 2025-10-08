@@ -1,6 +1,6 @@
 ﻿{
   "Discord": {
-    "Token": "replace with your own Discord token"
+    "Token": "Your Discord Token goes here"
   },
   "PatrolTemplate": {
     "ItemType": "Patrol",
@@ -108,6 +108,59 @@
       }
     ]
   },
+  "OATemplate": {
+    "ItemType": "Order of the Arrow",
+    "Roles": [
+      {
+        "Name": "OA Member",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      },
+      {
+        "Name": "OA Brotherhood",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      },
+      {
+        "Name": "OA Vigil",
+        "Color": "#e74c3c",
+        "Mentionable": true
+      }
+    ],
+    "Categories": [
+      {
+        "Name": "Order of the Arrow",
+        "Channels": [
+          {
+            "Name": "OA-general",
+            "Type": "textGuildChannel",
+            "Topic": "General discussion for the {name} unit."
+          },
+          {
+            "Name": "OA-Events",
+            "Type": "textGuildChannel",
+            "Topic": "General discussion for the {name} unit."
+          }
+        ],
+        "PermissionOverwrites": [
+          {
+            "RoleName": "OA Member",
+            "Allowed": [
+              "viewChannel",
+              "sendMessages",
+              "readMessageHistory"
+            ]
+          },
+          {
+            "RoleName": "Everyone",
+            "Denied": [
+              "viewChannel"
+            ]
+          }
+        ]
+      }
+    ]
+  },
   "MeritBadgeTemplate": {
     "ItemType": "Merit Badge",
     "Roles": [
@@ -121,6 +174,53 @@
       {
         "Name": "Merit Badges",
         "Channels": [
+          {
+            "Name": "merit-badge-sign-up",
+            "Type": "textGuildChannel",
+            "Topic": "Hosts the signup button",
+            "InitialMessages": [
+              {
+                "Content": "Click the button below to sign up for the {name} merit badge.",
+                "ActionRowItems": [
+                  {
+                    "Items": [
+                      {
+                        "CustomIdName": "sign_up_merit_badge_modal",
+                        "Label": "Sign Up for a Merit Badge",
+                        "Style": "Primary"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "PermissionOverwrites": [
+              {
+                "RoleName": "Registered Adult",
+                "Allowed": [
+                  "viewChannel",
+                  "sendMessages",
+                  "readMessageHistory"
+                ]
+              },
+              {
+                "RoleName": "Registered Scout",
+                "Allowed": [
+                  "viewChannel",
+                  "sendMessages",
+                  "readMessageHistory"
+                ]
+              },
+              {
+                "RoleName": "Parent",
+                "Allowed": [
+                  "viewChannel",
+                  "sendMessages",
+                  "readMessageHistory"
+                ]
+              }
+            ]
+          },
           {
             "Name": "{nameLower}-general",
             "Type": "textGuildChannel",
@@ -166,6 +266,11 @@
   "CommonTemplate": {
     "ItemType": "Common",
     "Roles": [
+      {
+        "Name": "Unverified",
+        "Color": "#e74c3c",
+        "Mentionable": false
+      },
       {
         "Name": "Scoutmaster",
         "Color": "#e74c3c",
@@ -300,6 +405,51 @@
             "RoleName": "Everyone",
             "Denied": [
               "viewChannel"
+            ]
+          }
+        ]
+      },
+      {
+        "Name": "welcome-to-scouts",
+        "Channels": [
+          {
+            "Name": "verification",
+            "Type": "textGuildChannel",
+            "Topic": "Unverified user channel",
+            "PermissionOverwrites": [
+            ],
+            "InitialMessages": [
+              {
+                "Content": "Click the button below to get registered into our server.  This will help us to make sure you are in the right patrol, have the right position set up, and get in the right groups with as little human intervention as possible",
+                "ActionRowItems": [
+                  {
+                    "Items": [
+                      {
+                        "CustomIdName": "register_scout_modal",
+                        "Label": "Register",
+                        "Style": "Primary"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+
+          }
+        ],
+        "PermissionOverwrites": [
+          {
+            "RoleName": "Everyone",
+            "Denied": [
+              "viewChannel"
+            ]
+          },
+          {
+            "RoleName": "Unverified",
+            "Allowed": [
+              "viewChannel",
+              "sendMessages",
+              "readMessageHistory"
             ]
           }
         ]

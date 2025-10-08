@@ -10,7 +10,7 @@ namespace ScoutTroopBot.AppCommands;
 /// Builds roles and channels based on a template configuration
 /// </summary>
 /// <param name="logger"></param>
-public class RoleChannelBuilder(ILogger<RoleChannelBuilder> logger) 
+public class NetcordComponentBuilder(ILogger<NetcordComponentBuilder> logger) 
 {
     /// <summary>
     /// Creates roles and channels in a guild based on the specified template configuration.
@@ -22,7 +22,7 @@ public class RoleChannelBuilder(ILogger<RoleChannelBuilder> logger)
     /// <param name="template">The template configuration that defines the roles, categories, and channels to create.</param>
     /// <param name="substitutions">A dictionary of placeholder substitutions to apply to the template values.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    public async Task CreateFromTemplate(
+    public async Task CreateAllFromTemplate(
         ApplicationCommandContext Context,
         TemplateConfiguration template,
         Dictionary<string, string> substitutions)
@@ -31,7 +31,7 @@ public class RoleChannelBuilder(ILogger<RoleChannelBuilder> logger)
 
         foreach (var roleTemplate in template.Roles)
         {
-            var newRole = await TranslateRole(roleTemplate, roles, substitutions, Context);
+            var newRole = await CreateRoleFromTemplate(roleTemplate, roles, substitutions, Context);
             if (!roles.Any(r => r.Id == newRole.Id))
             {
                 roles.Add(newRole);
@@ -41,7 +41,18 @@ public class RoleChannelBuilder(ILogger<RoleChannelBuilder> logger)
         List<IGuildChannel> channels = Context.Guild.Channels.Values.ToList();
         foreach(var categoryTemplate in template.Categories)
         {
-            var netCategory = await TranslateCategory(categoryTemplate, channels, substitutions, roles, Context);
+
+            var categoryName = DoSubstitutions(categoryTemplate.Name, substitutions);
+            await Context.Channel.SendMessageAsync($"Creating category {categoryName}");
+
+            var newCategory = new GuildChannelProperties(categoryName, ChannelType.CategoryChannel)
+            {
+                PermissionOverwrites = CreatePermissionOverridesFromTemplate(categoryTemplate.PermissionOverwrites, substitutions, roles, Context)
+
+            };
+
+            var netCategory = await CreateChannelIfNotExists(newCategory, channels, Context);
+
             if (netCategory != null && !channels.Any(x => x.Name == netCategory.Name))
             {
                 channels.Add(netCategory);
@@ -50,7 +61,7 @@ public class RoleChannelBuilder(ILogger<RoleChannelBuilder> logger)
             // Now create child channels
             foreach(var channelTemplate in categoryTemplate.Channels)
             {
-                var childChannel = await TranslateChannel(channelTemplate, netCategory, channels, substitutions, Context);
+                var childChannel = await CreateChannelFromTemplate(channelTemplate, netCategory, channels, substitutions, Context);
                 if (childChannel != null && !channels.Any(x => x.Name == childChannel.Name))
                 {
                     channels.Add(childChannel);
@@ -73,7 +84,7 @@ public class RoleChannelBuilder(ILogger<RoleChannelBuilder> logger)
     /// <param name="substitutions">A dictionary of substitution values used to replace placeholders in the template names.</param>
     /// <param name="restClient">The REST client used to perform channel deletion operations.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    public async Task DeleteFromTemplate(
+    public async Task DeleteChannelFromTemplate(
         ApplicationCommandContext Context,
         TemplateConfiguration template,
         Dictionary<string, string> substitutions, 
@@ -122,6 +133,39 @@ public class RoleChannelBuilder(ILogger<RoleChannelBuilder> logger)
 
     }
 
+    public async Task CreateMessageFromTemplate(
+        ApplicationCommandContext Context,
+        IGuildChannel targetChannel,
+        MessageTemplateConfiguration messageTemplate,
+        Dictionary<string, string> substitutions)
+    {
+        var messageContent = DoSubstitutions(messageTemplate.Content, substitutions);
+
+        var components = new List<IMessageComponentProperties>();
+
+        foreach (var actionRowTemplate in messageTemplate.ActionRowItems)
+        {
+            var actionRow = new ActionRowProperties();
+            foreach (var itemTemplate in actionRowTemplate.Items)
+            {
+                var button = new ButtonProperties(itemTemplate.CustomIDName, itemTemplate.Label, itemTemplate.Style);
+                actionRow.Add(button);
+            }
+            components.Add(actionRow);
+        }
+
+        var messageProperties = new MessageProperties
+        {
+            Content = messageContent,
+            Components = components
+        };
+
+        if (targetChannel is TextChannel targetTextChannel)
+        {
+            await targetTextChannel.SendMessageAsync(messageProperties);
+        }
+    }
+
     /// <summary>
     /// Renames channels, categories, and roles in a guild based on a specified template and a set of substitutions.
     /// </summary>
@@ -137,7 +181,7 @@ public class RoleChannelBuilder(ILogger<RoleChannelBuilder> logger)
     /// to be renamed.</param>
     /// <param name="substitutions">A dictionary of key-value pairs used to replace placeholders in the template with specific values.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    public async Task RenameFromTemplate(
+    public async Task RenameChannelFromTemplate(
         ApplicationCommandContext Context,
         TemplateConfiguration template,
         Dictionary<string, string> substitutions)
@@ -217,39 +261,6 @@ public class RoleChannelBuilder(ILogger<RoleChannelBuilder> logger)
     }
 
     /// <summary>
-    /// Creates or retrieves a category channel based on the specified template, applying substitutions and permissions.
-    /// </summary>
-    /// <remarks>This method ensures that a category channel is created or reused based on the provided
-    /// template and substitutions. If a matching category already exists, it is returned. Otherwise, a new category is
-    /// created with the specified name and permission overwrites. A message is sent to the context channel to indicate
-    /// the creation process.</remarks>
-    /// <param name="categoryTemplate">The template configuration for the category, including its name and permission overwrites.</param>
-    /// <param name="channels">The list of existing guild channels to check for duplicates before creating a new category.</param>
-    /// <param name="substitutions">A dictionary of placeholder substitutions to apply to the category name and permissions.</param>
-    /// <param name="roles">The list of roles used to configure permission overwrites for the category.</param>
-    /// <param name="Context">The context of the application command, used for sending messages and creating channels.</param>
-    /// <returns>The created or existing category channel that matches the specified template and substitutions.</returns>
-    private async Task<IGuildChannel> TranslateCategory(
-        CategoryTemplateConfiguration categoryTemplate, 
-        List<IGuildChannel> channels, 
-        Dictionary<string, string> substitutions, 
-        List<Role> roles,
-        ApplicationCommandContext Context)
-    {
-        var categoryName = DoSubstitutions(categoryTemplate.Name, substitutions);
-        await Context.Channel.SendMessageAsync($"Creating category {categoryName}");
-
-        var newCategory = new GuildChannelProperties(categoryName, ChannelType.CategoryChannel)
-        { 
-            PermissionOverwrites = TranslatePermissionOverwrites(categoryTemplate.PermissionOverwrites, substitutions, roles, Context)
-
-        };
-
-        var createdCategory = await CreateChannelIfNotExists(newCategory, channels, Context);
-        return createdCategory;
-    }
-
-    /// <summary>
     /// Translates a list of permission overwrite templates into a collection of permission overwrite properties based
     /// on the provided role mappings and substitutions.
     /// </summary>
@@ -263,7 +274,7 @@ public class RoleChannelBuilder(ILogger<RoleChannelBuilder> logger)
     /// <param name="Context">The application command context, which provides access to the guild and its default "everyone" role.</param>
     /// <returns>A list of <see cref="PermissionOverwriteProperties"/> representing the resolved permission overwrites. Returns
     /// <see langword="null"/> if no valid permission overwrites are generated.</returns>
-    private List<PermissionOverwriteProperties>? TranslatePermissionOverwrites(
+    private List<PermissionOverwriteProperties>? CreatePermissionOverridesFromTemplate(
         List<PermissionOverwriteTemplateConfiguration> permissionTemplates, 
         Dictionary<string, string> substitutions, 
         List<Role> roles,
@@ -316,7 +327,7 @@ public class RoleChannelBuilder(ILogger<RoleChannelBuilder> logger)
     /// <param name="substitutions">A dictionary of key-value pairs used to replace placeholders in the channel template's name and topic.</param>
     /// <param name="Context">The context of the application command, used for sending messages and interacting with the guild.</param>
     /// <returns>The created or existing guild channel that matches the specified template and substitutions.</returns>
-    private async Task<IGuildChannel> TranslateChannel(ChannelTemplateConfiguration channelTemplate, IGuildChannel parent, List<IGuildChannel> channels, Dictionary<string, string> substitutions, ApplicationCommandContext Context)
+    public async Task<IGuildChannel> CreateChannelFromTemplate(ChannelTemplateConfiguration channelTemplate, IGuildChannel parent, List<IGuildChannel> channels, Dictionary<string, string> substitutions, ApplicationCommandContext Context)
     {
         var categoryName = DoSubstitutions(channelTemplate.Name, substitutions);
         await Context.Channel.SendMessageAsync($"Creating category {categoryName}");
@@ -329,6 +340,16 @@ public class RoleChannelBuilder(ILogger<RoleChannelBuilder> logger)
         };
 
         var createdCategory = await CreateChannelIfNotExists(newCategory, channels, Context);
+
+        if (channelTemplate.InitialMessages != null)
+        {
+            foreach (var messageTemplate in channelTemplate.InitialMessages)
+            {
+                await CreateMessageFromTemplate(Context, createdCategory, messageTemplate, substitutions);
+            }
+        }
+
+
         return createdCategory;
     }
 
@@ -340,7 +361,7 @@ public class RoleChannelBuilder(ILogger<RoleChannelBuilder> logger)
     /// <param name="substitutions"></param>
     /// <param name="Context"></param>
     /// <returns></returns>
-    private async Task<Role> TranslateRole(
+    public async Task<Role> CreateRoleFromTemplate(
         RoleTemplateConfiguration roleTemplate, 
         List<Role> roles, 
         Dictionary<string, string> substitutions, 

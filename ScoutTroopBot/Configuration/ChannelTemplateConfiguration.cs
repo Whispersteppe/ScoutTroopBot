@@ -1,4 +1,5 @@
 ﻿using NetCord;
+using NetCord.Rest;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -27,7 +28,10 @@ public class ChannelTemplateConfiguration
 
     public List<PermissionOverwriteTemplateConfiguration> PermissionOverwrites { get; set; }
 
+    public List<MessageTemplateConfiguration>? InitialMessages { get; set; }
+
     [JsonExtensionData]
     public Dictionary<string, JsonElement> ExtraProperties { get; set; }
 
 }
+

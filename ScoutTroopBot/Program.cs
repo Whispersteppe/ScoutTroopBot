@@ -10,6 +10,7 @@ using NetCord.Hosting.Services.Commands;
 using NetCord.Hosting.Services.ComponentInteractions;
 using NetCord.Services.ComponentInteractions;
 using ScoutTroopBot.AppCommands;
+using ScoutTroopBot.AppCommands.SlashCommands;
 using ScoutTroopBot.Configuration;
 using System.Diagnostics;
 using System.Text.Json;
@@ -64,7 +65,8 @@ internal class Program
             .AddLogging()
             .AddComponentInteractions<ModalInteraction, ModalInteractionContext>()
             .AddComponentInteractions<ButtonInteraction, ButtonInteractionContext>()
-            .AddScoped<RoleChannelBuilder>()
+            //.AddComponentInteractions<RegisterScoutButtonHandler, ButtonInteractionContext>()
+            .AddScoped<NetcordComponentBuilder>()
             ;
 
         builder.Services
@@ -75,15 +77,7 @@ internal class Program
         var host = builder.Build();
         host.AddModules(typeof(Program).Assembly);
 
-        var configuration = new ConfigurationBuilder()
-            .AddCommandLine(args)
-            .AddJsonFile("appsettings.json")
-            .Build();
-
-        var root = configuration.Get<RootConfiguration>();
-
-        //DumpConfiguration(root);
-
+        //DumpConfiguration(args);
 
         await host.RunAsync();
     }
@@ -96,8 +90,14 @@ internal class Program
     /// the permission flags were giving me issues.  if they aren't right, then the 
     /// entire structure they are on just 'disappears' when deserialized.
     /// </remarks>
-    private static void DumpConfiguration(RootConfiguration root)
+    private static void DumpConfiguration(string[] args)
     {
+        var configuration = new ConfigurationBuilder()
+            .AddCommandLine(args)
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        var root = configuration.Get<RootConfiguration>();
 
         JsonSerializerOptions settings = new JsonSerializerOptions
         {
@@ -105,7 +105,7 @@ internal class Program
             Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
         };
 
-        Debug.WriteLine(JsonSerializer.Serialize(root.PatrolTemplate, settings));
+        Debug.WriteLine(JsonSerializer.Serialize(root.MeritBadgeTemplate, settings));
     }
 
 

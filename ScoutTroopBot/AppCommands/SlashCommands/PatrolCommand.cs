@@ -26,7 +26,7 @@ public class PatrolSetupCommands(
     /// </summary>
     /// <param name="patrolName"></param>
     /// <returns></returns>
-    [SubSlashCommand("create", "set up the patrol")]
+    [SubSlashCommand("patrol_create", "set up the patrol")]
     public async Task<string> SetupPatrolAsync([SlashCommandParameter(Description = "The name of the new patrol")] string patrolName)
     {
 
@@ -45,7 +45,7 @@ public class PatrolSetupCommands(
     /// list the set of existing patrols
     /// </summary>
     /// <returns></returns>
-    [SubSlashCommand("list", "list existing patrols")]
+    [SubSlashCommand("patrol_list", "list existing patrols")]
     public async Task<string> ListPatrolsAsync()
     {
         var patrolRoles = Context.Guild.Roles.Values.Where(r => r.Name.EndsWith(" Patrol")).Select(r => r.Name).ToList();
@@ -62,7 +62,7 @@ public class PatrolSetupCommands(
     /// <remarks>
     /// currently we're not deleting patrols to avoid accidental data loss
     /// </remarks>
-    [SubSlashCommand("delete", "delete a patrol")]
+    [SubSlashCommand("patrol_delete", "delete a patrol")]
     public async Task<string> DeletePatrolAsync([SlashCommandParameter(Description = "The name of the patrol to delete")] string patrolName)
     {
         return "We're currently not deleting patrols. Please contact an administrator.";
@@ -83,7 +83,7 @@ public class PatrolSetupCommands(
     /// <param name="patrolName"></param>
     /// <param name="newPatrolName"></param>
     /// <returns></returns>
-    [SubSlashCommand("rename", "rename a patrol")]
+    [SubSlashCommand("patrol_rename", "rename a patrol")]
     public async Task<string> RenamePatrolAsync(
         [SlashCommandParameter(Description = "The name of the patrol to rename")] string patrolName,
         [SlashCommandParameter(Description = "The new patrol name")] string newPatrolName

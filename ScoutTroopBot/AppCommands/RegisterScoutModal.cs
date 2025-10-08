@@ -23,17 +23,17 @@ public class RegisterScoutCommand(ILogger<RegisterScoutCommand> logger, RestClie
     public async Task<InteractionCallbackProperties<InteractionMessageProperties>> BorkAsync()
     {
 
-        var messageX = new MessageProperties()
-        {
-            Content = "Please register as a scout by clicking the button below.",
-            Components = new IMessageComponentProperties[]
-            {
-                new ActionRowProperties()
-                {
-                    new ButtonProperties("register_scout_button", "Register Scout", ButtonStyle.Primary)
-                },
-            }, 
-        };
+        //var messageX = new MessageProperties()
+        //{
+        //    Content = "Please register as a scout by clicking the button below.",
+        //    Components = new IMessageComponentProperties[]
+        //    {
+        //        new ActionRowProperties()
+        //        {
+        //            new ButtonProperties("register_scout_modal", "Register Scout", ButtonStyle.Primary)
+        //        },
+        //    }, 
+        //};
 
         var message = new InteractionMessageProperties()
         {
@@ -42,7 +42,7 @@ public class RegisterScoutCommand(ILogger<RegisterScoutCommand> logger, RestClie
             {
                 new ActionRowProperties()
                 {
-                    new ButtonProperties("register_scout_button", "Register Scout", ButtonStyle.Primary)
+                    new ButtonProperties("register_scout_modal", "Register Scout", ButtonStyle.Primary)
                 }
             }
         };
@@ -57,6 +57,29 @@ public class RegisterScoutCommand(ILogger<RegisterScoutCommand> logger, RestClie
 
 public class RegisterScoutButtonHandler(ILogger<RegisterScoutHandler> logger) : ComponentInteractionModule<ButtonInteractionContext>
 {
+
+    //TODO i'm gonna need a dynamic class thingie to make this really sing
+    [ComponentInteraction("register_scout_modal")]
+    public async Task<InteractionCallbackProperties<ModalProperties>> BorkAsync()
+    {
+        // Show modal dialog to user
+        //TODO these explode if there is no options in the list
+        var modal = new ModalProperties("register_scout", "Scout Information")
+        {
+            new LabelProperties("Name", new TextInputProperties("name", TextInputStyle.Short)),
+            new LabelProperties("Rank", CreateRankMenu()),
+            new LabelProperties("Position", CreatePositionMenu()),
+            new LabelProperties("Unit", CreateUnitMenu()),
+            new LabelProperties("Patrol", CreatePatrolMenu()),
+            //new LabelProperties("Patrol", new TextInputProperties("patrol", TextInputStyle.Short)),
+            //new LabelProperties("Rank", new TextInputProperties("rank", TextInputStyle.Short)),
+            //new LabelProperties("Position", new TextInputProperties("position", TextInputStyle.Short)),
+        };
+
+        var callback = InteractionCallback.Modal(modal);
+        return callback;
+    }
+
     private StringMenuProperties CreateUnitMenu()
     {
         var unitRoles = Context.Guild.Roles.Values.Where(r => r.Name.EndsWith(" Unit")).Select(r => r.Name.Replace(" Unit", "")).ToList();
@@ -143,26 +166,6 @@ public class RegisterScoutButtonHandler(ILogger<RegisterScoutHandler> logger) : 
         return rankMenu;
     }
 
-    //TODO i'm gonna need a dynamic class thingie to make this really sing
-    [ComponentInteraction("register_scout_button")]
-    public async Task<InteractionCallbackProperties<ModalProperties>> BorkAsync()
-    {
-        // Show modal dialog to user
-        var modal = new ModalProperties("register_scout", "Scout Information")
-        {
-            new LabelProperties("Name", new TextInputProperties("name", TextInputStyle.Short)),
-            new LabelProperties("Rank", CreateRankMenu()),
-            new LabelProperties("Position", CreatePositionMenu()),
-            new LabelProperties("Unit", CreateUnitMenu()),
-            new LabelProperties("Patrol", CreatePatrolMenu()),
-            //new LabelProperties("Patrol", new TextInputProperties("patrol", TextInputStyle.Short)),
-            //new LabelProperties("Rank", new TextInputProperties("rank", TextInputStyle.Short)),
-            //new LabelProperties("Position", new TextInputProperties("position", TextInputStyle.Short)),
-        };
-
-        var callback = InteractionCallback.Modal(modal);
-        return callback;
-    }
 }
 
 public class RegisterScoutHandler(ILogger<RegisterScoutHandler> logger) : ComponentInteractionModule<ModalInteractionContext>

@@ -13,6 +13,7 @@ public class RootConfiguration
     public TemplateConfiguration UnitTemplate { get; set; }
     public TemplateConfiguration MeritBadgeTemplate { get; set; }
     public TemplateConfiguration CommonTemplate { get; set; }
+    public TemplateConfiguration OATemplate { get; set; }
 
     public List<PositionItem> Positions { get; set; }
     public List<RankItem> Ranks { get; set; }
