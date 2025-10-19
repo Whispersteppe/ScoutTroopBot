@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using NetCord;
 using NetCord.Gateway;
 using NetCord.Hosting.Gateway;
 using NetCord.Rest;
@@ -35,19 +34,6 @@ public class MessageReactionAddHandler(ILogger<MessageReactionAddHandler> logger
 
         await client.SendMessageAsync(dmChannel.Id, $"<@{args.UserId}> reacted with {args.Emoji.Name}!");
 
-    }
-}
-
-public class NewUserHandler(ILogger<NewUserHandler> logger, RestClient client) : IGuildUserAddGatewayHandler
-{
-    public async ValueTask HandleAsync(GuildUser arg)
-    {
-        logger.LogInformation("Scoutbot:NewUserHandler");
-
-        logger.LogInformation("{nickname} just joined the server", arg.Nickname);
-
-        //todo - query the user, get the appropriate information, and set them up properly
-        
     }
 }
 

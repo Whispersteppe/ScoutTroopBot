@@ -12,24 +12,25 @@ namespace ScoutTroopBot.AppCommands.SlashCommands;
 /// </summary>
 /// <param name="logger"></param>
 /// <param name="restClient"></param>
-[SlashCommand("setup", "Manages setup", DefaultGuildPermissions = Permissions.Administrator)]
-public class SetupCommand(ILogger<SetupCommand> logger, 
+[SlashCommand("sbot-oa", "sbot commands", DefaultGuildPermissions = Permissions.Administrator)]
+public class SbotOACommands(ILogger<SbotOACommands> logger,
     RestClient restClient,
     IOptions<RootConfiguration> rootConfig,
-    RoleChannelBuilder roleChannelBuilder) : ApplicationCommandModule<ApplicationCommandContext>
+    NetcordComponentBuilder roleChannelBuilder) : ApplicationCommandModule<ApplicationCommandContext>
 {
-
     /// <summary>
-    /// command to set up common roles and channels
+    /// create the roles and channels for a new unit
     /// </summary>
+    /// <param name="unitName"></param>
     /// <returns></returns>
-    [SubSlashCommand("common", "set up the server")]
-    public async Task<string> SetupServerAsync()
+    [SubSlashCommand("create", "set up Order of the Arrow channels")]
+    public async Task<string> SetupOAAsync()
     {
+
         Dictionary<string, string> substitutions = new Dictionary<string, string>()
         {
         };
-        roleChannelBuilder.CreateFromTemplate(Context, rootConfig.Value.CommonTemplate, substitutions);
+        roleChannelBuilder.CreateAllFromTemplate(Context, rootConfig.Value.OATemplate, substitutions);
 
         return "Continuing Setup in background";
     }

@@ -8,18 +8,15 @@ using ScoutTroopBot.Configuration;
 namespace ScoutTroopBot.AppCommands.SlashCommands;
 
 /// <summary>
-/// Commands for managing units
+/// set up the server with common roles and channels
 /// </summary>
 /// <param name="logger"></param>
 /// <param name="restClient"></param>
-/// <param name="rootConfig"></param>
-/// <param name="roleChannelBuilder"></param>
-[SlashCommand("unit", "Manages unit setup", DefaultGuildPermissions = Permissions.Administrator)]
-public class UnitSetupCommands(
-    ILogger<SetupCommand> logger, 
+[SlashCommand("sbot-unit", "sbot commands", DefaultGuildPermissions = Permissions.Administrator)]
+public class SbotUnitCommands(ILogger<SbotUnitCommands> logger,
     RestClient restClient,
     IOptions<RootConfiguration> rootConfig,
-    RoleChannelBuilder roleChannelBuilder) : ApplicationCommandModule<ApplicationCommandContext>
+    NetcordComponentBuilder roleChannelBuilder) : ApplicationCommandModule<ApplicationCommandContext>
 {
     /// <summary>
     /// create the roles and channels for a new unit
@@ -35,7 +32,7 @@ public class UnitSetupCommands(
             { "name", unitName },
             { "nameLower", unitName.ToLower().Replace(' ', '-') },
         };
-        roleChannelBuilder.CreateFromTemplate(Context, rootConfig.Value.UnitTemplate, substitutions);
+        roleChannelBuilder.CreateAllFromTemplate(Context, rootConfig.Value.UnitTemplate, substitutions);
 
         return "Continuing Setup in background";
     }

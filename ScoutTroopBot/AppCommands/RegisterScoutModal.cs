@@ -23,18 +23,6 @@ public class RegisterScoutCommand(ILogger<RegisterScoutCommand> logger, RestClie
     public async Task<InteractionCallbackProperties<InteractionMessageProperties>> BorkAsync()
     {
 
-        //var messageX = new MessageProperties()
-        //{
-        //    Content = "Please register as a scout by clicking the button below.",
-        //    Components = new IMessageComponentProperties[]
-        //    {
-        //        new ActionRowProperties()
-        //        {
-        //            new ButtonProperties("register_scout_modal", "Register Scout", ButtonStyle.Primary)
-        //        },
-        //    }, 
-        //};
-
         var message = new InteractionMessageProperties()
         {
             Content = "Please register as a scout by clicking the button below.",
@@ -71,9 +59,6 @@ public class RegisterScoutButtonHandler(ILogger<RegisterScoutHandler> logger) : 
             new LabelProperties("Position", CreatePositionMenu()),
             new LabelProperties("Unit", CreateUnitMenu()),
             new LabelProperties("Patrol", CreatePatrolMenu()),
-            //new LabelProperties("Patrol", new TextInputProperties("patrol", TextInputStyle.Short)),
-            //new LabelProperties("Rank", new TextInputProperties("rank", TextInputStyle.Short)),
-            //new LabelProperties("Position", new TextInputProperties("position", TextInputStyle.Short)),
         };
 
         var callback = InteractionCallback.Modal(modal);
@@ -86,7 +71,7 @@ public class RegisterScoutButtonHandler(ILogger<RegisterScoutHandler> logger) : 
         List<StringMenuSelectOptionProperties> options = new List<StringMenuSelectOptionProperties>();
         foreach (var unitName in unitRoles)
         {
-            options.Add(new StringMenuSelectOptionProperties(unitName, unitName.Replace(" ", "_")));
+            options.Add(new StringMenuSelectOptionProperties(unitName, unitName));
         }
         var unitMenu = new StringMenuProperties("unit", options)
         {
@@ -104,8 +89,10 @@ public class RegisterScoutButtonHandler(ILogger<RegisterScoutHandler> logger) : 
         List<StringMenuSelectOptionProperties> options = new List<StringMenuSelectOptionProperties>();
         foreach (var patrolName in patrolRoles)
         {
-            options.Add(new StringMenuSelectOptionProperties(patrolName, patrolName.Replace(" ", "_")));
+            options.Add(new StringMenuSelectOptionProperties(patrolName, patrolName)); //.Replace(" ", "_")));
         }
+
+        options.Add(new StringMenuSelectOptionProperties("Unknown", "Unknown"));
 
         var patrolMenu = new StringMenuProperties("patrol", options)
         {
@@ -122,15 +109,15 @@ public class RegisterScoutButtonHandler(ILogger<RegisterScoutHandler> logger) : 
         var positionMenu = new StringMenuProperties("position", new[]
         {
             new StringMenuSelectOptionProperties("Patrol Leader", "patrol_leader"),
-            new StringMenuSelectOptionProperties("Assistant Patrol Leader", "assistant_patrol_leader"),
+            new StringMenuSelectOptionProperties("Assistant Patrol Leader", "assistant patrol leader"),
             new StringMenuSelectOptionProperties("Scribe", "scribe"),
             new StringMenuSelectOptionProperties("Quartermaster", "quartermaster"),
             new StringMenuSelectOptionProperties("Historian", "historian"),
-            new StringMenuSelectOptionProperties("Den Chief", "den_chief"),
-            new StringMenuSelectOptionProperties("Webelos Leader", "webelos_leader"),
+            new StringMenuSelectOptionProperties("Den Chief", "den chief"),
+            new StringMenuSelectOptionProperties("Webelos Leader", "webelos leader"),
 
             new StringMenuSelectOptionProperties("Scoutmaster", "scoutmaster"),
-            new StringMenuSelectOptionProperties("Assistant Scoutmaster", "assistant-scoutmaster"),
+            new StringMenuSelectOptionProperties("Assistant Scoutmaster", "assistant scoutmaster"),
             new StringMenuSelectOptionProperties("Committee", "committee"),
 
 
@@ -150,13 +137,13 @@ public class RegisterScoutButtonHandler(ILogger<RegisterScoutHandler> logger) : 
 
         var rankMenu = new StringMenuProperties("rank", new[]
         {
-            new StringMenuSelectOptionProperties("Scout", "scout"),
-            new StringMenuSelectOptionProperties("Tenderfoot", "tenderfoot"),
-            new StringMenuSelectOptionProperties("Second Class", "second_class"),
-            new StringMenuSelectOptionProperties("First Class", "first_class"),
-            new StringMenuSelectOptionProperties("Star", "star"),
-            new StringMenuSelectOptionProperties("Life", "life"),
-            new StringMenuSelectOptionProperties("Eagle", "eagle"),
+            new StringMenuSelectOptionProperties("Scout", "Scout"),
+            new StringMenuSelectOptionProperties("Tenderfoot", "Tenderfoot"),
+            new StringMenuSelectOptionProperties("Second Class", "Second Class"),
+            new StringMenuSelectOptionProperties("First Class", "First Class"),
+            new StringMenuSelectOptionProperties("Star", "Star"),
+            new StringMenuSelectOptionProperties("Life", "Life"),
+            new StringMenuSelectOptionProperties("Eagle", "Eagle"),
         })
         {
             Placeholder = "Select Rank",
@@ -204,6 +191,42 @@ public class RegisterScoutHandler(ILogger<RegisterScoutHandler> logger) : Compon
     public async Task<string> RegisterScoutModalHandlerAsync()
     {
         // Extract values from modal components by their custom IDs
+
+        var nvpName = GetComponentValue(Context.Components[0]);
+        var nvpRank = GetComponentValue(Context.Components[1]);
+        var nvpPosition = GetComponentValue(Context.Components[2]);
+        var nvpUnit = GetComponentValue(Context.Components[3]);
+        var nvpPatrol = GetComponentValue(Context.Components[4]);
+
+        var currentUser = await Context.User.GetAsync();
+
+        var unverifiedRole = Context.Guild.Roles.Values.FirstOrDefault(x => x.Name == "Unverified");
+
+        //await Context.Guild.RemoveUserRoleAsync(Context.User.Id, unverifiedRole.Id);
+
+        await Context.Guild.ModifyCurrentUserAsync(x =>
+        {
+            x.Nickname = nvpName.value;
+        });
+
+        var rankRole = Context.Guild.Roles.Values.FirstOrDefault(r => r.Name.ToLower() == nvpRank.value);
+        var positionRole = Context.Guild.Roles.Values.FirstOrDefault(r => r.Name == nvpPosition.value);
+        var unitRole = Context.Guild.Roles.Values.FirstOrDefault(r => r.Name == nvpUnit.value + " Unit");
+        var patrolRole = Context.Guild.Roles.Values.FirstOrDefault(r => r.Name == nvpPatrol.value + " Patrol");
+
+        if (rankRole != null) await Context.Guild.AddUserRoleAsync(Context.User.Id, rankRole.Id);
+        if (positionRole != null) await Context.Guild.AddUserRoleAsync(Context.User.Id, positionRole.Id);
+        if (unitRole != null) await Context.Guild.AddUserRoleAsync(Context.User.Id, unitRole.Id);
+        if (patrolRole != null) await Context.Guild.AddUserRoleAsync(Context.User.Id, patrolRole.Id);
+
+
+        JsonSerializerOptions settings = new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+        };
+
+
         var namevalues = new Dictionary<string, string>();
 
         foreach (var component in Context.Components)
@@ -211,14 +234,6 @@ public class RegisterScoutHandler(ILogger<RegisterScoutHandler> logger) : Compon
             var nvp = GetComponentValue(component);
             namevalues.Add(nvp.name, nvp.value);
         }
-
-        //TODO do more here
-
-        JsonSerializerOptions settings = new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
-        };
 
         var rslt = JsonSerializer.Serialize(namevalues, settings);
 

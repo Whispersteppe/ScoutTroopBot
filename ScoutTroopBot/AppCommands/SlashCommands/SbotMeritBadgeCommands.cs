@@ -6,29 +6,17 @@ using NetCord.Services.ApplicationCommands;
 using ScoutTroopBot.Configuration;
 
 namespace ScoutTroopBot.AppCommands.SlashCommands;
-/* TODO merit badge stuff
- *     void AddBadgeForUser();
-    void CompleteBadgeForUser();
-    void GetBadgeList();
-    void GetBadgesForUser();
-    void GetBadgeRoster();
- */
 
 /// <summary>
-/// Provides commands for managing merit badge setup within a Discord server.
+/// set up the server with common roles and channels
 /// </summary>
-/// <remarks>This class defines slash commands for creating and listing merit badge-related roles and channels. It
-/// is intended for use by administrators and requires appropriate permissions to execute.</remarks>
 /// <param name="logger"></param>
 /// <param name="restClient"></param>
-/// <param name="rootConfig"></param>
-/// <param name="roleChannelBuilder"></param>
-[SlashCommand("mb", "Manages merit badge setup", DefaultGuildPermissions = Permissions.Administrator)]
-public class MeritBadgeSetupCommands(
-    ILogger<SetupCommand> logger, 
+[SlashCommand("sbot-mb", "sbot commands", DefaultGuildPermissions = Permissions.Administrator)]
+public class SbotMeritBadgeCommands(ILogger<SbotMeritBadgeCommands> logger,
     RestClient restClient,
     IOptions<RootConfiguration> rootConfig,
-    RoleChannelBuilder roleChannelBuilder) : ApplicationCommandModule<ApplicationCommandContext>
+    NetcordComponentBuilder roleChannelBuilder) : ApplicationCommandModule<ApplicationCommandContext>
 {
     /// <summary>
     /// Sets up a merit badge by creating the necessary roles and channels based on a predefined template.
@@ -47,7 +35,7 @@ public class MeritBadgeSetupCommands(
             { "name", badgeName },
             { "nameLower", badgeName.ToLower().Replace(' ', '-') },
         };
-        roleChannelBuilder.CreateFromTemplate(Context, rootConfig.Value.MeritBadgeTemplate, substitutions);
+        roleChannelBuilder.CreateAllFromTemplate(Context, rootConfig.Value.MeritBadgeTemplate, substitutions);
 
         return "Continuing Setup in background";
     }
@@ -61,7 +49,7 @@ public class MeritBadgeSetupCommands(
     /// <returns>A string containing the names of all existing merit badge units, each on a new line, or a message indicating
     /// that no units were found.</returns>
     [SubSlashCommand("list", "list existing merit badges")]
-    public async Task<string> ListUnitsAsync()
+    public async Task<string> ListMeritBadgesAsync()
     {
         var unitRoles = Context.Guild.Roles.Values.Where(r => r.Name.EndsWith(" Merit Badge")).Select(r => r.Name).ToList();
         if (unitRoles.Count == 0)
